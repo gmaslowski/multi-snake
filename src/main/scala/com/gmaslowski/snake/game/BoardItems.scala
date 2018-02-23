@@ -6,10 +6,12 @@ object BoardItems {
 
   case class Dimension(width: Int, height: Int) {
 
-    if(width <= 2 || height <= 2) throw new IllegalArgumentException("Really?")
+    if (width <= 2 || height <= 2) throw new IllegalArgumentException("Really?")
 
     val xLast = width - 1
     val yLast = height - 1
+
+    def maxFields = width * height
   }
 
   sealed class BoardItem(p: Point)

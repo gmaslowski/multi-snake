@@ -4,10 +4,12 @@ import akka.actor.{Actor, ActorLogging, Props}
 import com.gmaslowski.snake.game
 import com.gmaslowski.snake.game.BoardItems.{Dimension, Food, Obstacle, Point}
 import com.gmaslowski.snake.game.Border.{Border, YES}
-import com.gmaslowski.snake.game.Difficulty.Difficulty
+import com.gmaslowski.snake.game.Difficulty.{Difficulty, EASY, HARD, NORMAL}
 import com.gmaslowski.snake.game.GameBoard.{MoveSnake, NextMove}
 import com.gmaslowski.snake.game.Move.Move
 import com.typesafe.config.Config
+
+import scala.util.Random
 
 object Move extends Enumeration {
   type Move = Value
@@ -16,6 +18,7 @@ object Move extends Enumeration {
 
 object Difficulty extends Enumeration {
   type Difficulty = Value
+
   val EASY: game.Difficulty.Value = Value("easy")
   val NORMAL: game.Difficulty.Value = Value("normal")
   val HARD: game.Difficulty.Value = Value("hard")
@@ -51,13 +54,24 @@ object GameBoard {
           x <- 0 until config.dimension.width
           y <- 0 until config.dimension.height
         } yield (x, y) match {
-          case (sidesX @ (0 | config.dimension.xLast), _) => obstacles ::= Obstacle(Point(sidesX, y))
-          case (_, sidesY @ (0 | config.dimension.yLast)) => obstacles ::= Obstacle(Point(x, sidesY))
+          case (sidesX@(0 | config.dimension.xLast), _) => obstacles ::= Obstacle(Point(sidesX, y))
+          case (_, sidesY@(0 | config.dimension.yLast)) => obstacles ::= Obstacle(Point(x, sidesY))
           case (_, _) =>
         }
     }
 
-    obstacles
+    val percentage = config.difficulty match {
+      case EASY => 50
+      case NORMAL => 20
+      case HARD => 10
+    }
+
+    val r = new Random()
+    for (i <- 0 to config.dimension.maxFields / percentage) {
+      obstacles ::= Obstacle(Point(r.nextInt(config.dimension.width), r.nextInt(config.dimension.height)))
+    }
+
+    obstacles.distinct
   }
 }
 
