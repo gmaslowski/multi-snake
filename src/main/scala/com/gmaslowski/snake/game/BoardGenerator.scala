@@ -27,7 +27,7 @@ object BoardGenerator {
     generatedFood.distinct
   }
 
-  def generateObstacles(config: GameBoardConfig): Seq[Obstacle] = {
+  def generateObstacles(config: GameBoardConfig): List[Obstacle] = {
 
     var obstacles: List[Obstacle] = List.empty
 
@@ -51,7 +51,7 @@ object BoardGenerator {
     obstacles.distinct
   }
 
-  def generateBoard(config: GameBoardConfig): (Seq[Food], Seq[Obstacle]) = {
+  def generateBoard(config: GameBoardConfig): (List[Food], List[Obstacle]) = {
     val food = generateFood(List.empty[Food], config)
     val obstacles = generateObstacles(config)
     (food.filter(food => obstacles.map(_.p).contains(food.p)), obstacles)

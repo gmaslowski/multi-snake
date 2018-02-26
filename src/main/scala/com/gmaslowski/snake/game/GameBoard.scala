@@ -1,12 +1,13 @@
 package com.gmaslowski.snake.game
 
-import akka.actor.{Actor, ActorLogging, Props}
+import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import com.gmaslowski.snake.game
 import com.gmaslowski.snake.game.BoardItems.Dimension
-import com.gmaslowski.snake.game.Border.Border
-import com.gmaslowski.snake.game.Difficulty.Difficulty
-import com.gmaslowski.snake.game.GameBoard.{MoveSnake, NextMove}
+import com.gmaslowski.snake.game.Border.{Border, YES}
+import com.gmaslowski.snake.game.Difficulty.{Difficulty, NORMAL}
+import com.gmaslowski.snake.game.GameBoard.{MoveSnake, NextMove, SendToFront}
 import com.gmaslowski.snake.game.Move.Move
+import com.gmaslowski.snake.websocket.APIs.BoardData
 import com.typesafe.config.Config
 
 object Move extends Enumeration {
@@ -33,23 +34,31 @@ case class GameBoardConfig(difficulty: Difficulty, border: Border, dimension: Di
 case class Snake(gamerId: String)
 
 object GameBoard {
-  def props(plainConfig: Config) = Props(classOf[GameBoard], plainConfig)
+  def props(plainConfig: Config, wsSender: ActorRef) = Props(classOf[GameBoard], plainConfig, wsSender)
 
   // api
   case object NextMove
 
   case class MoveSnake(snake: Snake, move: Move)
 
+  case object SendToFront
+
 }
 
-class GameBoard(val plainConfig: Config) extends Actor with ActorLogging {
+class GameBoard(val plainConfig: Config, val wsSender: ActorRef) extends Actor with ActorLogging {
 
-  val config = null
+  // todo: this config should be created based on the plainConfig
+  val config = new GameBoardConfig(NORMAL, YES, Dimension(70, 70))
 
   var nextMoves: Map[Snake, Move] = Map.empty
   var move: Int = 0
 
-  var food, obstacles = BoardGenerator.generateBoard(config)
+  var (food, obstacles) = BoardGenerator.generateBoard(config)
+
+  import scala.concurrent.duration._
+
+  implicit val ec = context.dispatcher
+  context.system.scheduler.schedule(1 second, 33 milliseconds, self, SendToFront)
 
   override def receive: Receive = {
 
@@ -60,5 +69,7 @@ class GameBoard(val plainConfig: Config) extends Actor with ActorLogging {
     case NextMove =>
       move += 1
 
+    case SendToFront =>
+      wsSender ! BoardData(obstacles, food)
   }
 }

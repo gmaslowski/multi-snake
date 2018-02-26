@@ -10,7 +10,7 @@ object UdpConnection {
   def props(config: Config) = Props(classOf[UdpConnection], config)
 }
 
-class UdpConnection(val telemetryReceiver: ActorRef, val config: Config) extends Actor with ActorLogging {
+class UdpConnection(val config: Config) extends Actor with ActorLogging {
 
   import context.system
 
