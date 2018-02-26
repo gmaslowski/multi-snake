@@ -20,7 +20,6 @@ class ToJsonConverterSpec extends TestKit(ActorSystem("ToJsonConverterSpec")) wi
     "convert a message to API class" in {
       toJsonConverter ! BoardData(List.empty, List.empty)
 
-      expectMsgClass(classOf[API_BoardData])
       expectMsg(API_BoardData(List.empty, List.empty))
     }
 
