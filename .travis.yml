@@ -8,6 +8,7 @@ install:
   - pip install --user codecov
 
 script:
-  - sbt ++$TRAVIS_SCALA_VERSION test
-  - sbt coverageReport
-  - codecov --token=${CODECOV_KEY}
+  - sbt ++$TRAVIS_SCALA_VERSION coverage test coverageReport
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
