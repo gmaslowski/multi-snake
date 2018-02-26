@@ -8,7 +8,7 @@ import com.gmaslowski.snake.websocket.FrontendWebSocketConnection._
 
 object FrontendWebSocketConnection {
 
-  def props(wsHandler: ActorRef) = Props(classOf[FrontendWebSocketConnection], wsHandler)
+  def props(webSocketSender: ActorRef) = Props(classOf[FrontendWebSocketConnection], webSocketSender)
 
   // api
   case class ConnectRequest(outgoing: ActorRef)
@@ -27,14 +27,14 @@ object FrontendWebSocketConnection {
 
 }
 
-class FrontendWebSocketConnection(wsHandler: ActorRef) extends FSM[State, Data] with Akka.AkkaThings {
+class FrontendWebSocketConnection(webSocketSender: ActorRef) extends FSM[State, Data] with Akka.AkkaThings {
 
   startWith(InactiveState, Uninitialized)
 
   when(InactiveState) {
     case Event(ConnectRequest(outgoing), Uninitialized) =>
       log.info("Received connection request.")
-      wsHandler ! RegisterWsClient(self)
+      webSocketSender ! RegisterWsClient(self)
       goto(ConnectedState) using WithReceiver(outgoing)
   }
 
