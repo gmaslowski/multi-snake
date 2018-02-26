@@ -2,14 +2,12 @@ package com.gmaslowski.snake.game
 
 import akka.actor.{Actor, ActorLogging, Props}
 import com.gmaslowski.snake.game
-import com.gmaslowski.snake.game.BoardItems.{Dimension, Food, Obstacle, Point}
-import com.gmaslowski.snake.game.Border.{Border, YES}
-import com.gmaslowski.snake.game.Difficulty.{Difficulty, EASY, HARD, NORMAL}
+import com.gmaslowski.snake.game.BoardItems.Dimension
+import com.gmaslowski.snake.game.Border.Border
+import com.gmaslowski.snake.game.Difficulty.Difficulty
 import com.gmaslowski.snake.game.GameBoard.{MoveSnake, NextMove}
 import com.gmaslowski.snake.game.Move.Move
 import com.typesafe.config.Config
-
-import scala.util.Random
 
 object Move extends Enumeration {
   type Move = Value
@@ -42,37 +40,6 @@ object GameBoard {
 
   case class MoveSnake(snake: Snake, move: Move)
 
-  def generateFood(food: Seq[Food], config: GameBoardConfig): Seq[Food] = food
-
-  def generateObstacles(config: GameBoardConfig): Seq[Obstacle] = {
-
-    var obstacles: List[Obstacle] = List.empty
-
-    config.border match {
-      case YES =>
-        for {
-          x <- 0 until config.dimension.width
-          y <- 0 until config.dimension.height
-        } yield (x, y) match {
-          case (sidesX@(0 | config.dimension.xLast), _) => obstacles ::= Obstacle(Point(sidesX, y))
-          case (_, sidesY@(0 | config.dimension.yLast)) => obstacles ::= Obstacle(Point(x, sidesY))
-          case (_, _) =>
-        }
-    }
-
-    val percentage = config.difficulty match {
-      case EASY => 50
-      case NORMAL => 20
-      case HARD => 10
-    }
-
-    val r = new Random()
-    for (i <- 0 to config.dimension.maxFields / percentage) {
-      obstacles ::= Obstacle(Point(r.nextInt(config.dimension.width), r.nextInt(config.dimension.height)))
-    }
-
-    obstacles.distinct
-  }
 }
 
 class GameBoard(val plainConfig: Config) extends Actor with ActorLogging {
@@ -82,8 +49,7 @@ class GameBoard(val plainConfig: Config) extends Actor with ActorLogging {
   var nextMoves: Map[Snake, Move] = Map.empty
   var move: Int = 0
 
-  var obstacles: Seq[Obstacle] = GameBoard.generateObstacles(config)
-  var food: Seq[Food] = GameBoard.generateFood(List.empty, config)
+  var food, obstacles = BoardGenerator.generateBoard(config)
 
   override def receive: Receive = {
 
@@ -95,6 +61,4 @@ class GameBoard(val plainConfig: Config) extends Actor with ActorLogging {
       move += 1
 
   }
-
-
 }

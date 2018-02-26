@@ -1,13 +1,13 @@
 package com.gmaslowski.snake.game
 
-import com.gmaslowski.snake.game.BoardItems.{Dimension, Obstacle}
+import com.gmaslowski.snake.game.BoardGenerator.{generateFood, generateObstacles}
+import com.gmaslowski.snake.game.BoardItems.{Dimension, Food, Obstacle}
 import com.gmaslowski.snake.game.Border.YES
 import com.gmaslowski.snake.game.Difficulty.{EASY, HARD}
-import com.gmaslowski.snake.game.GameBoard.generateObstacles
-import com.gmaslowski.snake.game.GameBoardSpec._
+import com.gmaslowski.snake.game.BoardGeneratorSpec._
 import org.scalatest.{FlatSpec, Matchers}
 
-object GameBoardSpec {
+object BoardGeneratorSpec {
   val WIDTH_DIM = 12
   val HEIGHT_DIM = 7
 
@@ -16,7 +16,7 @@ object GameBoardSpec {
   def borderSize: (Int, Int) => Int = (width, height) => 2 * width + 2 * (height - 2)
 }
 
-class GameBoardSpec extends FlatSpec with Matchers {
+class BoardGeneratorSpec extends FlatSpec with Matchers {
 
   val hardBorderedConfig = GameBoardConfig(
     difficulty = HARD,
@@ -43,5 +43,15 @@ class GameBoardSpec extends FlatSpec with Matchers {
   it should "create obstacles not only on border" in {
     generateObstacles(hardBorderedConfig).filterNot(onlyBorder).size should be > 0
   }
+
+  it should "create more food on EASY difficulty than on HARD " in {
+    generateFood(List.empty[Food], easyBorderedConfig).size should be > generateFood(List.empty[Food], hardBorderedConfig).size
+  }
+
+  it should "obstacles take precedence if generated on the same point as food" in {
+    val board = BoardGenerator.generateBoard(easyBorderedConfig)
+    board._1.map(_.p) should not contain board._2.map(_.p)
+  }
+
 
 }
