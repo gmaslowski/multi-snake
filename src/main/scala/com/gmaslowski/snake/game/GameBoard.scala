@@ -38,9 +38,11 @@ object GameBoard {
 
   // api
   case object NextMove
+
   case class MoveSnake(snake: Snake, move: Move)
 
   case object SendToFront
+
 }
 
 class GameBoard(val plainConfig: Config, val wsSender: ActorRef) extends Actor with ActorLogging {
@@ -54,6 +56,7 @@ class GameBoard(val plainConfig: Config, val wsSender: ActorRef) extends Actor w
   var (food, obstacles) = BoardGenerator.generateBoard(config)
 
   import scala.concurrent.duration._
+
   implicit val ec = context.dispatcher
   context.system.scheduler.schedule(1 second, 33 milliseconds, self, SendToFront)
 

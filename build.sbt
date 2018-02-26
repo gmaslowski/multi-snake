@@ -3,7 +3,7 @@ name := "multi-snake"
 
 scalaVersion := "2.12.4"
 
-val akkaV = "2.5.9"
+val akkaV = "2.5.10"
 val akkaHttpV = "10.0.11"
 val logbackV = "1.2.3"
 val scalatestV = "3.0.5"
@@ -20,5 +20,6 @@ libraryDependencies ++= Seq(
   "ch.qos.logback" % "logback-classic" % logbackV,
 
   // testing
-  "org.scalatest" %% "scalatest" % scalatestV % "test"
+  "org.scalatest" %% "scalatest" % scalatestV % "test",
+  "com.typesafe.akka" %% "akka-testkit" % akkaV % "test"
 )
