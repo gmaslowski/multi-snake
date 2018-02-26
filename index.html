@@ -1,0 +1,35 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+
+    <script type="text/javascript">
+     function setupWS() {
+       var ws = new WebSocket("ws://localhost:80/frontend/ws");
+
+       ws.onopen = function() {
+          ws.send("Message to send");
+       };
+
+       ws.onmessage = function (evt) {
+          var received_msg = evt.data;
+          console.log(received_msg);
+       };
+
+       ws.onclose = function() {
+          console.log("Connection is closed...");
+       };
+
+       window.onbeforeunload = function(event) {
+          socket.close();
+       };
+     }
+
+    setupWS();
+
+    </script>
+
+</head>
+<body>
+
+</body>
+</html>
