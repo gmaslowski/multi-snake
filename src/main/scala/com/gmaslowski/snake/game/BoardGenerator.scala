@@ -16,7 +16,7 @@ object BoardGenerator {
 
   def generateFood(food: List[Food], config: GameBoardConfig): List[Food] = {
     // todo: percentage name is really something weird
-    val desiredFoodCount = config.dimension.maxFields * (percentage(config.difficulty) / 100)
+    val desiredFoodCount = config.dimension.maxFields/2 * (percentage(config.difficulty) / 100)
     var generatedFood = food
     if (desiredFoodCount > food.size * 2) {
       val r = new Random()
@@ -54,6 +54,6 @@ object BoardGenerator {
   def generateBoard(config: GameBoardConfig): (List[Food], List[Obstacle]) = {
     val food = generateFood(List.empty[Food], config)
     val obstacles = generateObstacles(config)
-    (food.filter(food => obstacles.map(_.p).contains(food.p)), obstacles)
+    (food.filterNot(food => obstacles.map(_.p).contains(food.p)), obstacles)
   }
 }

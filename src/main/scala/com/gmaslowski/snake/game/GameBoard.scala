@@ -4,7 +4,7 @@ import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import com.gmaslowski.snake.game
 import com.gmaslowski.snake.game.BoardItems.Dimension
 import com.gmaslowski.snake.game.Border.{Border, YES}
-import com.gmaslowski.snake.game.Difficulty.{Difficulty, NORMAL}
+import com.gmaslowski.snake.game.Difficulty.{Difficulty, EASY, HARD, NORMAL}
 import com.gmaslowski.snake.game.GameBoard.{MoveSnake, NextMove, SendToFront}
 import com.gmaslowski.snake.game.Move.Move
 import com.gmaslowski.snake.websocket.APIs.BoardData
@@ -58,7 +58,7 @@ class GameBoard(val plainConfig: Config, val wsSender: ActorRef) extends Actor w
   import scala.concurrent.duration._
 
   implicit val ec = context.dispatcher
-  context.system.scheduler.schedule(1 second, 33 milliseconds, self, SendToFront)
+  context.system.scheduler.schedule(1 second, 200 milliseconds, self, SendToFront)
 
   override def receive: Receive = {
 
@@ -70,6 +70,7 @@ class GameBoard(val plainConfig: Config, val wsSender: ActorRef) extends Actor w
       move += 1
 
     case SendToFront =>
-      wsSender ! BoardData(obstacles, food)
+      val (a, b) = BoardGenerator.generateBoard(config)
+      wsSender ! BoardData(config.dimension, b, a)
   }
 }

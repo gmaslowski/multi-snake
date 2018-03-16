@@ -9,7 +9,7 @@ object ToJsonConverter {
 
 class ToJsonConverter extends Actor with ActorLogging {
   override def receive = {
-    case data@BoardData(obstacles, food) =>
-      sender() ! API_BoardData(obstacles, food)
+    case data@BoardData(dimension, obstacles, food) =>
+      sender() ! API_BoardData(dimension, obstacles, food)
   }
 }

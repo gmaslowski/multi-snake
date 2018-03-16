@@ -50,7 +50,7 @@ class BoardGeneratorSpec extends FlatSpec with Matchers {
 
   it should "obstacles take precedence if generated on the same point as food" in {
     val board = BoardGenerator.generateBoard(easyBorderedConfig)
-    board._1.map(_.p) should not contain board._2.map(_.p)
+    board._2.map(_.p) should not contain board._1.map(_.p)
   }
 
 

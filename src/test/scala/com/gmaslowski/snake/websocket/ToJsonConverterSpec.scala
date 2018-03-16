@@ -2,6 +2,7 @@ package com.gmaslowski.snake.websocket
 
 import akka.actor.ActorSystem
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
+import com.gmaslowski.snake.game.BoardItems.Dimension
 import com.gmaslowski.snake.websocket.APIs.{API_BoardData, BoardData}
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 
@@ -18,10 +19,9 @@ class ToJsonConverterSpec extends TestKit(ActorSystem("ToJsonConverterSpec")) wi
     val toJsonConverter = system.actorOf(ToJsonConverter.props)
 
     "convert a message to API class" in {
-      toJsonConverter ! BoardData(List.empty, List.empty)
+      toJsonConverter ! BoardData(Dimension(1,1), List.empty, List.empty)
 
-      expectMsg(API_BoardData(List.empty, List.empty))
+      expectMsg(API_BoardData(Dimension(1,1), List.empty, List.empty))
     }
-
   }
 }
