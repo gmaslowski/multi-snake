@@ -19,9 +19,9 @@ class ToJsonConverterSpec extends TestKit(ActorSystem("ToJsonConverterSpec")) wi
     val toJsonConverter = system.actorOf(ToJsonConverter.props)
 
     "convert a message to API class" in {
-      toJsonConverter ! BoardData(Dimension(1,1), List.empty, List.empty)
+      toJsonConverter ! BoardData(Dimension(3,3), List.empty, List.empty)
 
-      expectMsg(API_BoardData(Dimension(1,1), List.empty, List.empty))
+      expectMsg(API_BoardData(Dimension(3,3), List.empty, List.empty))
     }
   }
 }

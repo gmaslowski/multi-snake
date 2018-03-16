@@ -4,65 +4,64 @@
     <script src="https://d3js.org/d3.v4.min.js"></script>
     <script src="grid.js" type="text/javascript"></script>
     <script type="text/javascript">
-     var grid = null;
+        var grid = null;
 
-     function setupWS() {
-       var ws = new WebSocket("ws://localhost:80/frontend/ws");
+        function setupWS() {
+            var ws = new WebSocket("ws://localhost:80/frontend/ws");
 
-       ws.onopen = function() {
-          ws.send("Message to send");
-       };
+            ws.onopen = function() {
+              ws.send("Message to send");
+            };
 
-       ws.onmessage = function (evt) {
-         var board = JSON.parse(evt.data);
-         var gridData = generateArray(window.innerHeight * 0.8 / board.dimension.height, board);
+            ws.onmessage = function (evt) {
+             var board = JSON.parse(evt.data);
+             var gridData = generateArray(window.innerHeight * 0.8 / board.dimension.height, board);
 
-         update(gridData);
-       };
+             update(gridData);
+            };
 
-       ws.onclose = function() {
-          console.log("Connection is closed...");
-       };
+            ws.onclose = function() {
+              console.log("Connection is closed...");
+            };
 
-       window.onbeforeunload = function(event) {
-          socket.close();
-       };
-     }
+            window.onbeforeunload = function(event) {
+              socket.close();
+            };
+        }
 
-    setupWS();
+        setupWS();
 
-    function update(gridData) {
+        function update(gridData) {
 
-      if(grid == null) {
-        grid = d3.select("#grid")
-          .append("svg")
-          .attr("width", window.innerWidth * 0.85)
-          .attr("height", window.innerHeight * 0.85);
-      }
+            if(grid == null) {
+                grid = d3.select("#grid")
+                    .append("svg")
+                    .attr("width", window.innerWidth * 0.85)
+                    .attr("height", window.innerHeight * 0.85);
+            }
 
-      var row = grid.selectAll(".row")
-        .data(gridData)
-        .enter().append("g")
-        .attr("class", "row");
+            var row = grid.selectAll(".row")
+                .data(gridData)
+                .enter().append("g")
+                .attr("class", "row");
 
-      var column = row.selectAll(".square")
-        .data(function(d) { return d; });
+            var column = row.selectAll(".square")
+                .data(function(d) { return d; });
 
-      var rect = column;
+            var rect = column;
 
-      rect.enter().append("rect")
-        .attr("class","square")
-        .attr("x", function(d) { return d.x; })
-        .attr("y", function(d) { return d.y; })
-        .attr("width", function(d) { return d.width; })
-        .attr("height", function(d) { return d.height; })
-      .merge(rect)
-        .style("fill", function(d) { return d.color; })
-        .style("stroke", "#ccc");
+            rect.enter().append("rect")
+                .attr("class","square")
+                .attr("x", function(d) { return d.x; })
+                .attr("y", function(d) { return d.y; })
+                .attr("width", function(d) { return d.width; })
+                .attr("height", function(d) { return d.height; })
+            .merge(rect)
+                .style("fill", function(d) { return d.color; })
+                .style("stroke", "#ccc");
 
-      rect.exit().remove();
-    }
-
+            rect.exit().remove();
+        }
     </script>
 
 </head>
